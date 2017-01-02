@@ -1,0 +1,21 @@
+{
+  "name": "HUSTOJ插件",
+  "description": "Make the web looks better",
+  "version": "1.0",
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["contentscript.js"]
+    }
+  ],
+  "icons": 
+  { 
+    "16": "icon16.png",             
+    "48": "icon48.png",            
+    "128": "icon128.png" 
+  },  
+  "manifest_version": 2
+}

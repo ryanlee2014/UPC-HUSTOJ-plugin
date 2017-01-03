@@ -49,13 +49,13 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
     var cnt = 0;
     var val = 0;
     var fuv = 0;
-    for (var i = 10; i < aa.length; i++) {
+    for (var i = 7; i < aa.length; i++) {
         // console.log(aa[i].innerText);
         if (aa[i].href.match(/userinfo/)) {
             var exist = new Boolean();
             exist = true;
             //  console.log(aa[i].innerText);
-            for (var j = 10; j < i; j++) {
+            for (var j = 7; j < i; j++) {
                 if (aa[j].innerText == aa[i].innerText) {
                     exist = false;
                     //console.log(aa[i].innerText + i);

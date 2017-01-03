@@ -1,3 +1,4 @@
+var ar = new Array();
 if (window.location.href.match(/status\.php\?(&)?cid/)) {
     var p = new String();
     var xmlhttp;
@@ -39,91 +40,117 @@ if (window.location.href.match(/status\.php\?(&)?cid/)) {
     xmlhttp.open("GET", "contestrank.php?" + window.location.href.match(/cid=[0-9]{1,9}/), false);
     xmlhttp.send();
 }
-else if(window.location.href.match(/status.php/)||window.location.href.match(/problemstatus/))
-{
+else if (window.location.href.match(/status.php/) || window.location.href.match(/problemstatus/)) {
     //console.log('test');
     var p = new String();
-    var aa=document.body.querySelectorAll('a');
-    var atxt=new Array();
-    var btxt=new Array();
-    var cnt=0;
-    var val=0;
-    var fuv=0;
-    for(var i=0;i<aa.length;i++)
-    {
-        //console.log(aa[i].href);
-        if(aa[i].href.match(/userinfo/))
-        {
-            var xmlhttp;
-            atxt[cnt++]=aa[i].innerText;
-            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                xmlhttp = new XMLHttpRequest();
+    var aa = document.body.querySelectorAll('a');
+    var atxt = new Array();
+    var btxt = new Array();
+    var cnt = 0;
+    var val = 0;
+    var fuv = 0;
+    for (var i = 10; i < aa.length; i++) {
+        // console.log(aa[i].innerText);
+        if (aa[i].href.match(/userinfo/)) {
+            var exist = new Boolean();
+            exist = true;
+            //  console.log(aa[i].innerText);
+            for (var j = 10; j < i; j++) {
+                if (aa[j].innerText == aa[i].innerText) {
+                    exist = false;
+                    //console.log(aa[i].innerText + i);
+                    //  console.log(aa[j].innerText + j);
+                    break;
+                }
             }
-            else {// code for IE6, IE5
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            xmlhttp.number=cnt-1;
-            xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    p = this.responseText;
-                   // console.log(p);
+            if (exist) {
+                // console.log(aa[i].innerText);
+                var xmlhttp;
+                atxt[cnt] = aa[i].innerText;
+                ar[cnt++] = aa[i].innerText;
+                if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp = new XMLHttpRequest();
+                }
+                else {// code for IE6, IE5
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.number = cnt - 1;
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        p = this.responseText;
+                        // console.log(p);
 
-                 //   btxt[fuv++]=xmlhttp.responseText;
-                    var x;
-                    try{
-                        x=p.match(/<caption>[\s\S]{1,60}<a/).toString();
-                        var evstr=new String();
-                        // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
-                        evstr+=x.substring(x.lastIndexOf('-')+1,x.lastIndexOf('<'));
-                        // console.log(evstr);
-                    }
-                    catch(e){
-                        console.log(e.message);
-                    }
-                    var div = document.createElement("div");
-                    div.innerHTML = evstr;//利用html的特点转义html转义字符
-                    evstr = div.innerHTML;
-                    btxt[this.number]=evstr;
-                    val++;
-                    if(cnt==val)
-                    {
+                        //   btxt[fuv++]=xmlhttp.responseText;
+                        var x;
+                        try {
+                            x = p.match(/<caption>[\s\S]{1,60}<a/).toString();
+                            var evstr = new String();
+                            // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
+                            evstr += x.substring(x.lastIndexOf('-') + 1, x.lastIndexOf('<'));
+                            // console.log(evstr);
+                        }
+                        catch (e) {
+                            console.log(e.message);
+                        }
+                        var div = document.createElement("div");
+                        div.innerHTML = evstr;//利用html的特点转义html转义字符
+                        evstr = div.innerHTML;
+                        btxt[this.number] = evstr;
+                        val++;
+                        // if(cnt==val)
+                        // {
                         //console.log(btxt);
-                        convert();
+                        convert(this.number);
+                        // console.log(btxt[this.number]);
+                        //  }
                     }
-                }
-            }
-            xmlhttp.open("GET", "http://"+window.location.host+"/userinfo.php?user="+aa[i].innerText, true);
-            xmlhttp.send();
-            //console.log(x);
-        }
-    }
-    function convert() {
-        var aa=document.body.querySelectorAll('a');
-        for(var i=0;i<aa.length;i++)
-        {
-            if(aa[i].href.match(/userinfo/))
-            {
-                for(var j=0;j<atxt.length;j++)
-                {
-                    if(aa[i].innerText==atxt[j])
-                    {
-                        aa[i].innerText=btxt[j]+"--"+aa[i].innerText;
-                    }
-                }
+                };
+                xmlhttp.open("GET", "http://" + window.location.host + "/userinfo.php?user=" + aa[i].innerText, true);
+                xmlhttp.send();
+                //console.log(x);
             }
         }
     }
+    function convert(n) {
+        var aa = document.body.querySelectorAll('a');
+        var innex = new String();
+        innex = ar[n];
+        //   console.log(ar);
+        for (var i = 0; i < aa.length; i++) {
+            if (aa[i].innerText == innex) {
+                aa[i].innerText = btxt[n] + "--" + ar[n];
+                //console.log(ar[n]);
+                // console.log(btxt[n]);
+            }
+        }
+        //ar[n].innerText=btxt[n]+"--"+ar[n].innerText;
+        /*
+         for(var i=0;i<aa.length;i++)
+         {
+         if(aa[i].href.match(/userinfo/))
+         {
+         for(var j=0;j<atxt.length;j++)
+         {
+         if(aa[i].innerText==atxt[j])
+         {
+         aa[i].innerText=btxt[j]+"--"+aa[i].innerText;
+         }
+         }
+         }
+         }*/
+    }
+
     /*for(var i=0;i<aa.length;i++)
-    {
-        if(aa[i].href.match(/userinfo/))
-        {
-              var x=p[cnt++].toString().match(/<caption>[\s\S]{1,30}<a/).toString();
-             var evstr=new String();
-             // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
-             evstr+=x.substring(x.lastIndexOf('-')+1,x.lastIndexOf('<'));
-             console.log(evstr);
-             aa[i].innerText=evstr;
-        }
-    }*/
+     {
+     if(aa[i].href.match(/userinfo/))
+     {
+     var x=p[cnt++].toString().match(/<caption>[\s\S]{1,30}<a/).toString();
+     var evstr=new String();
+     // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
+     evstr+=x.substring(x.lastIndexOf('-')+1,x.lastIndexOf('<'));
+     console.log(evstr);
+     aa[i].innerText=evstr;
+     }
+     }*/
 
 }

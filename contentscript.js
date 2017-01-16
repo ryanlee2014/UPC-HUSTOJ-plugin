@@ -1,5 +1,5 @@
 var ar = new Array();
-if (window.location.href.match(/status\.php\?(&)?cid/)) {
+if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
     var p = new String();
     var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -9,6 +9,7 @@ if (window.location.href.match(/status\.php\?(&)?cid/)) {
         xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange = function () {
+        console.log("readyState="+xmlhttp.readyState+",status="+xmlhttp.status);
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             p = xmlhttp.responseText;
             var doc = p.match(/<tbody[\s\S]+\/tbody>/);
@@ -49,14 +50,15 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
     var cnt = 0;
     var val = 0;
     var fuv = 0;
-    for (var i = 7; i < aa.length; i++) {
+    for (var i = 5; i < aa.length; i++) {
         // console.log(aa[i].innerText);
         if (aa[i].href.match(/userinfo/)) {
             var exist = new Boolean();
             exist = true;
+            //console.log(aa[i].innerText);
             //  console.log(aa[i].innerText);
-            for (var j = 7; j < i; j++) {
-                if (aa[j].innerText == aa[i].innerText) {
+            for (var j = 5; j < i; j++) {
+                if (aa[j].innerText == aa[i].innerText&&aa[i].href==aa[j].href) {
                     exist = false;
                     //console.log(aa[i].innerText + i);
                     //  console.log(aa[j].innerText + j);
@@ -64,7 +66,6 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                 }
             }
             if (exist) {
-                // console.log(aa[i].innerText);
                 var xmlhttp;
                 atxt[cnt] = aa[i].innerText;
                 ar[cnt++] = aa[i].innerText;
@@ -76,6 +77,7 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                 }
                 xmlhttp.number = cnt - 1;
                 xmlhttp.onreadystatechange = function () {
+                    //console.log("readyState="+xmlhttp.readyState+",status="+xmlhttp.status);
                     if (this.readyState == 4 && this.status == 200) {
                         p = this.responseText;
                         // console.log(p);
@@ -83,10 +85,11 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                         //   btxt[fuv++]=xmlhttp.responseText;
                         var x;
                         try {
-                            x = p.match(/<caption>[\s\S]{1,60}<a/).toString();
+                        	//console.log(p);
+                            x = p.match(/<caption>[\s\S]{1,80}<a/).toString();
                             var evstr = new String();
                             // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
-                            evstr += x.substring(x.lastIndexOf('-') + 1, x.lastIndexOf('<'));
+                            evstr += x.substring(x.lastIndexOf('--') + 2, x.lastIndexOf('<'));
                             // console.log(evstr);
                         }
                         catch (e) {
@@ -105,7 +108,7 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                         //  }
                     }
                 };
-                xmlhttp.open("GET", "http://" + window.location.host + "/userinfo.php?user=" + aa[i].innerText, true);
+                xmlhttp.open("GET", aa[i].href, true);
                 xmlhttp.send();
                 //console.log(x);
             }

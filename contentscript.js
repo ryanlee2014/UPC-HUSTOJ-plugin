@@ -1,41 +1,38 @@
-function status_ajax()
-{
-    var tbody_html=document.getElementsByTagName("tbody")[0].childNodes;
-    var length=tbody_html.length;
-    for(var i=1;i<length;++i)
-    {
-        var xmlhttp;
+function status_ajax() {
+    let tbody_html = document.getElementsByTagName("tbody")[0].childNodes;
+    let length = tbody_html.length;
+    for (let i = 1; i < length; ++i) {
+        let xmlhttp;
         if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp = new XMLHttpRequest();
         }
         else {// code for IE6, IE5
             xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
-        xmlhttp.id=i;
-        var runner_id=tbody_html[i].childNodes[0].innerText;
-        xmlhttp.onreadystatechange=function () {
-            if(this.readyState===4&&this.status===200)
-            {
+        xmlhttp.id = i;
+        let runner_id = tbody_html[i].childNodes[0].innerText;
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
                 console.log(this.id);
-                var response=this.responseText;
-                response=response.split(",");
-                var target=document.getElementsByTagName("tbody")[0].childNodes[this.id];
+                let response = this.responseText;
+                response = response.split(",");
+                let target = document.getElementsByTagName("tbody")[0].childNodes[this.id];
                 //console.log(target);
-                target.childNodes[4].innerText=response[1]+"KB";
-                target.childNodes[5].innerText=response[2];
+                target.childNodes[4].innerText = response[1] + "KB";
+                target.childNodes[5].innerText = response[2];
             }
         };
-       // console.log(runner_id);
-        xmlhttp.open("GET", "status-ajax.php?solution_id=" + runner_id , true);
+        // console.log(runner_id);
+        xmlhttp.open("GET", "status-ajax.php?solution_id=" + runner_id, true);
         xmlhttp.send();
     }
 }
 
 
-var ar = new Array();
+let ar = [];
 if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
-    var p = new String();
-    var xmlhttp;
+    let p = "";
+    let xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
     }
@@ -43,16 +40,16 @@ if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
         xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange = function () {
-        console.log("readyState="+xmlhttp.readyState+",status="+xmlhttp.status);
+        console.log("readyState=" + xmlhttp.readyState + ",status=" + xmlhttp.status);
         if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
             p = xmlhttp.responseText;
-            var doc = p.match(/<tbody[\s\S]+\/tbody>/);
+            let doc = p.match(/<tbody[\s\S]+\/tbody>/);
             //console.log(doc);
-            var ll = doc.toString().match(/\?user=[\s\S]{4,20}>[^0-9]{1}[\s\S]{0,30}<\/a>/g);
-           // console.log(ll);
-            var parstr="";
-            for (var i = 0; i < ll.length; i++) {
-                if(i&1===1) {
+            let ll = doc.toString().match(/\?user=[\s\S]{4,20}>[^0-9][\s\S]{0,30}<\/a>/g);
+            // console.log(ll);
+            let parstr = "";
+            for (let i = 0; i < ll.length; i++) {
+                if (i % 2 === 1) {
                     if (i === 0) {
                         parstr += "if(p==\"" + ll[i].substring(ll[i].indexOf("=") + 1, ll[i].indexOf(">")) + "\")\n{\n";
                         parstr += "dd[i].innerText=\"" + ll[i].substring(ll[i].indexOf(">") + 1, ll[i].indexOf("/") - 1) + "\"+'--'+dd[i].innerText;\n}\n";
@@ -63,39 +60,38 @@ if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
                     }
                 }
             }
-            var div = document.createElement("div");
+            let div = document.createElement("div");
             div.innerHTML = parstr;//利用html的特点转义html转义字符
             parstr = div.innerHTML;
             //console.log(parstr);
-            var dd = document.body.querySelectorAll('a');
-            for (var i = 0; i < dd.length; i++) {
-                var p = dd[i].innerText;
+            let dd = document.body.querySelectorAll('a');
+            for (let i = 0; i < dd.length; i++) {
+                let p = dd[i].innerText;
                 eval(parstr);
             }
             status_ajax();
         }
-    }
+    };
     xmlhttp.open("GET", "contestrank.php?" + window.location.href.match(/cid=[0-9]{1,9}/), false);
     xmlhttp.send();
 }
 else if (window.location.href.match(/status.php/) || window.location.href.match(/problemstatus/)) {
     //console.log('test');
-    var p;
-    var aa = document.body.querySelectorAll('a');
-    var atxt = new Array();
-    var btxt = new Array();
-    var cnt = 0;
-    var val = 0;
-    var fuv = 0;
-    for (var i = 5; i < aa.length; i++) {
+    let p;
+    let aa = document.body.querySelectorAll('a');
+    let atxt = [];
+    let btxt = [];
+    let cnt = 0;
+    let val = 0;
+    let fuv = 0;
+    for (let i = 5; i < aa.length; i++) {
         // console.log(aa[i].innerText);
         if (aa[i].href.match(/userinfo/)) {
-            var exist = new Boolean();
-            exist = true;
+            let exist = true;
             //console.log(aa[i].innerText);
             //  console.log(aa[i].innerText);
-            for (var j = 5; j < i; j++) {
-                if (aa[j].innerText == aa[i].innerText&&aa[i].href==aa[j].href) {
+            for (let j = 5; j < i; j++) {
+                if (aa[j].innerText === aa[i].innerText && aa[i].href === aa[j].href) {
                     exist = false;
                     //console.log(aa[i].innerText + i);
                     //  console.log(aa[j].innerText + j);
@@ -103,7 +99,7 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                 }
             }
             if (exist) {
-                var xmlhttp;
+                let xmlhttp;
                 atxt[cnt] = aa[i].innerText;
                 ar[cnt++] = aa[i].innerText;
                 if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -114,17 +110,17 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                 }
                 xmlhttp.number = cnt - 1;
                 xmlhttp.onreadystatechange = function () {
+                    let evstr="";
                     //console.log("readyState="+xmlhttp.readyState+",status="+xmlhttp.status);
-                    if (this.readyState == 4 && this.status == 200) {
+                    if (this.readyState === 4 && this.status === 200) {
                         p = this.responseText;
                         // console.log(p);
 
                         //   btxt[fuv++]=xmlhttp.responseText;
-                        var x;
+                        let x;
                         try {
-                        	//console.log(p);
+                            //console.log(p);
                             x = p.match(/<caption>[\s\S]{1,80}<a/).toString();
-                            var evstr = new String();
                             // evstr+=x.substring(x.indexOf('>')+1,x.indexOf('-'))+" ";
                             evstr += x.substring(x.lastIndexOf('--') + 2, x.lastIndexOf('<'));
                             // console.log(evstr);
@@ -132,7 +128,7 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
                         catch (e) {
                             console.log(e.message);
                         }
-                        var div = document.createElement("div");
+                        let div = document.createElement("div");
                         div.innerHTML = evstr;//利用html的特点转义html转义字符
                         evstr = div.innerHTML;
                         btxt[this.number] = evstr;
@@ -152,12 +148,11 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
         }
     }
     function convert(n) {
-        var aa = document.body.querySelectorAll('a');
-        var innex = new String();
-        innex = ar[n];
+        let aa = document.body.querySelectorAll('a');
+        let innex = ar[n];
         //   console.log(ar);
-        for (var i = 0; i < aa.length; i++) {
-            if (aa[i].innerText == innex) {
+        for (let i = 0; i < aa.length; i++) {
+            if (aa[i].innerText === innex) {
                 aa[i].innerText = btxt[n] + "--" + ar[n];
                 //console.log(ar[n]);
                 // console.log(btxt[n]);
@@ -192,5 +187,4 @@ else if (window.location.href.match(/status.php/) || window.location.href.match(
      aa[i].innerText=evstr;
      }
      }*/
-
 }

@@ -1,3 +1,37 @@
+function status_ajax()
+{
+    var tbody_html=document.getElementsByTagName("tbody")[0].childNodes;
+    var length=tbody_html.length;
+    for(var i=1;i<length;++i)
+    {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {// code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.id=i;
+        var runner_id=tbody_html[i].childNodes[0].innerText;
+        xmlhttp.onreadystatechange=function () {
+            if(this.readyState===4&&this.status===200)
+            {
+                console.log(this.id);
+                var response=this.responseText;
+                response=response.split(",");
+                var target=document.getElementsByTagName("tbody")[0].childNodes[this.id];
+                //console.log(target);
+                target.childNodes[4].innerText=response[1]+"KB";
+                target.childNodes[5].innerText=response[2];
+            }
+        };
+       // console.log(runner_id);
+        xmlhttp.open("GET", "status-ajax.php?solution_id=" + runner_id , true);
+        xmlhttp.send();
+    }
+}
+
+
 var ar = new Array();
 if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
     var p = new String();
@@ -10,21 +44,23 @@ if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
     }
     xmlhttp.onreadystatechange = function () {
         console.log("readyState="+xmlhttp.readyState+",status="+xmlhttp.status);
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
             p = xmlhttp.responseText;
             var doc = p.match(/<tbody[\s\S]+\/tbody>/);
             //console.log(doc);
-            var ll = doc.toString().match(/\?user=[\s\S]{4,20}>[^0-9A-Za-z]{1}[\s\S]{0,30}<\/a>/g);
-            //console.log(ll);
-            var parstr = new String();
+            var ll = doc.toString().match(/\?user=[\s\S]{4,20}>[^0-9]{1}[\s\S]{0,30}<\/a>/g);
+           // console.log(ll);
+            var parstr="";
             for (var i = 0; i < ll.length; i++) {
-                if (i == 0) {
-                    parstr += "if(p==\"" + ll[i].substring(ll[i].indexOf("=") + 1, ll[i].indexOf(">")) + "\")\n{\n";
-                    parstr += "dd[i].innerText=\"" + ll[i].substring(ll[i].indexOf(">") + 1, ll[i].indexOf("/") - 1) + "\"+'--'+dd[i].innerText;\n}\n";
-                }
-                else {
-                    parstr += "if(p==\"" + ll[i].substring(ll[i].indexOf("=") + 1, ll[i].indexOf(">")) + "\")\n{\n";
-                    parstr += "dd[i].innerText=\"" + ll[i].substring(ll[i].indexOf(">") + 1, ll[i].indexOf("/") - 1) + "\"+'--'+dd[i].innerText;\n}\n";
+                if(i&1===1) {
+                    if (i === 0) {
+                        parstr += "if(p==\"" + ll[i].substring(ll[i].indexOf("=") + 1, ll[i].indexOf(">")) + "\")\n{\n";
+                        parstr += "dd[i].innerText=\"" + ll[i].substring(ll[i].indexOf(">") + 1, ll[i].indexOf("/") - 1) + "\"+'--'+dd[i].innerText;\n}\n";
+                    }
+                    else {
+                        parstr += "if(p==\"" + ll[i].substring(ll[i].indexOf("=") + 1, ll[i].indexOf(">")) + "\")\n{\n";
+                        parstr += "dd[i].innerText=\"" + ll[i].substring(ll[i].indexOf(">") + 1, ll[i].indexOf("/") - 1) + "\"+'--'+dd[i].innerText;\n}\n";
+                    }
                 }
             }
             var div = document.createElement("div");
@@ -36,6 +72,7 @@ if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
                 var p = dd[i].innerText;
                 eval(parstr);
             }
+            status_ajax();
         }
     }
     xmlhttp.open("GET", "contestrank.php?" + window.location.href.match(/cid=[0-9]{1,9}/), false);
@@ -43,7 +80,7 @@ if (window.location.href.match(/status\.php\??[\s\S]{0,60}cid/)) {
 }
 else if (window.location.href.match(/status.php/) || window.location.href.match(/problemstatus/)) {
     //console.log('test');
-    var p = new String();
+    var p;
     var aa = document.body.querySelectorAll('a');
     var atxt = new Array();
     var btxt = new Array();
